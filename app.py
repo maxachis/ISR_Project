@@ -1,5 +1,6 @@
 import sqlite3
 from flask import Flask, render_template, request, url_for, flash, redirect
+from backend import indeed
 
 
 app = Flask(__name__)
@@ -11,12 +12,10 @@ messages = [{'title': 'Message One',
              'content': 'Message Two Content'}
             ]
 
+
 @app.route('/')
 def index():
-    conn = get_db_connection()
-    posts = conn.execute('SELECT * FROM posts').fetchall()
-    conn.close()
-    return render_template('index.html', posts=posts, messages=messages)
+    return render_template('search.html')
 
 @app.route('/about/')
 def about():
@@ -28,29 +27,41 @@ def search():
 
 @app.route('/handle_data', methods=['POST'])
 def handle_data():
-    projectpath = request.form['projectFilepath']
-    return projectpath
+    results = []
+    #Send to backend
+    jobTitle = request.form['jobTitle']
+    jobLocation = request.form['jobLocation']
+    websites = request.form.getlist('websites')
+    #If Indeed, run Indeed backend
+    if "indeed" in websites:
+        indeed_results = indeed.get_indeed_results(jobTitle, jobLocation)
+        for result in indeed_results:
+            results.append({
+                "Job Title": result['title'],
+                "Company": result['company'],
+                "Location": result['location']
+            })
 
-@app.route('/create/', methods=('GET', 'POST'))
-def create():
-    if request.method == 'POST':
-        print(request.form)
-        title = request.form['title']
-        content = request.form['content']
+    #If Glassdoor, run Glassdoor backend
 
-        if not title:
-            flash('Title is required!')
-        elif not content:
-            flash('Content is required!')
-        else:
-            #Here we could run the search and get results
+    #Combine all results (TODO: Note which API they came from?)
+    return render_template('results.html', results=results)
 
-            #Then we could modify this to return the search results
-            messages.append({'title': title, 'content': content})
-            return redirect(url_for('index'))
-    return render_template('create.html')
+if __name__ == '__main__':
+    app.run()
 
-def get_db_connection():
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
