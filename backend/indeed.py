@@ -11,7 +11,6 @@ def extract(page, position, location):
     soup = BeautifulSoup(r.content, 'html.parser')
     return soup
 
-
 def transform(soup):
     count = 0
     divs = soup.find_all('div', id='mosaic-provider-jobcards')
@@ -27,55 +26,56 @@ def transform(soup):
 
                 # Get title:
                 i = 0
-                container = item.find_all('span')
-                title = container[0].text.strip()
-                while title == 'new':
-                    i += 1
-                    title = container[i].text.strip()
+                if item is not None:
+                    container = item.find_all('span')
+                    title = container[0].text.strip()
+                    while title == 'new':
+                        i += 1
+                        title = container[i].text.strip()
 
-                    # Get Comapany:
-                company = item.find('span', class_='companyName').text.strip()
+                    # Get Company:
+                    company = item.find('span', class_='companyName').text.strip()
 
-                # Get Salary:
-                try:
-                    sal = item.find('div', class_='attribute_snippet').text.strip()
-                    if '$' in sal:
-                        salary = sal
-                    else:
-                        salary = ""
-                except:
-                    salary = ''
+                    # Get Salary:
+                    try:
+                        sal = item.find('div', class_='attribute_snippet').text.strip()
+                        if '$' in sal:
+                            salary = sal
+                        else:
+                            salary = ""
+                    except:
+                        salary = ''
 
-                # Get Ratings:
-                try:
-                    rating = item.find('span', class_='ratingNumber').text.strip()
-                except:
-                    rating = ''
+                    # Get Ratings:
+                    try:
+                        rating = item.find('span', class_='ratingNumber').text.strip()
+                    except:
+                        rating = ''
 
-                # Get Location:
-                location = item.find('div', class_='companyLocation').text.strip()
+                    # Get Location:
+                    location = item.find('div', class_='companyLocation').text.strip()
 
-                # Get Job Posting Date:
-                date = item.find('span', class_='date').text.strip()
+                    # Get Job Posting Date:
+                    date = item.find('span', class_='date').text.strip()
 
-                # Get summary
-                try:
-                    summary = item.find('li').text.strip()
-                except:
-                    summary = ""
+                    # Get summary
+                    try:
+                        summary = item.find('li').text.strip()
+                    except:
+                        summary = ""
 
-                # Job Card:
-                job = {
-                    'link': link,
-                    'title': title,
-                    'company': company,
-                    'salary': salary,
-                    'rating': rating,
-                    'location': location,
-                    'date': date,
-                    'summary': summary
-                }
-                joblist.append(job)
+                    # Job Card:
+                    job = {
+                        'link': link,
+                        'title': title,
+                        'company': company,
+                        'salary': salary,
+                        'rating': rating,
+                        'location': location,
+                        'date': date,
+                        'summary': summary
+                    }
+                    joblist.append(job)
     return
 
 
@@ -88,6 +88,3 @@ def get_indeed_results(jobTitle, jobLocation):
         c = extract(i, position, location)
         transform(c)
     return joblist
-    # for i in joblist:
-    #     print(i)
-    #     print("\n")
