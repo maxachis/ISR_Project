@@ -24,3 +24,4 @@ requests~=2.26.0
 beautifulsoup4~=4.10.0
 selenium~=3.141.0
 spacy~=3.2.1
+geopy~=2.2.0
