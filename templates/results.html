@@ -6,12 +6,14 @@
     <th>Job Title</th>
     <th>Company</th>
     <th>Location</th>
+    <th>Salary</th>
     <th>Source</th>
     {% for result in results %}
         <tr>
             <td><a href="{{result["Link"]}}" >{{result["Job Title"]}}</a></td>
             <td>{{result["Company"]}}</td>
             <td>{{result["Location"]}}</td>
+            <td>{{result["Salary"]}}</td>
             <td>{{result["Source"]}}</td>
         </tr>
     {% endfor %}

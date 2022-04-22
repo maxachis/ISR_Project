@@ -46,6 +46,7 @@ def handle_data():
                 "Company": result['company'],
                 "Location": result['location'],
                 "Link": result["link"],
+                "Salary": result['salary'],
                 "Source": 'Indeed'
             })
 
@@ -59,6 +60,7 @@ def handle_data():
                 "Company": li_result['company'],
                 "Location": li_result['location'],
                 "Link": li_result["link"],
+                "Salary": result['salary'],
                 "Source": 'LinkedIn'
             })
     # If Simply Hired, run Simply Hired backend
@@ -71,6 +73,7 @@ def handle_data():
                 "Company": sh_result['company'],
                 "Location": sh_result['location'],
                 "Link": sh_result["link"],
+                "Salary": "",
                 "Source": 'Simply Hired'
             })
 
@@ -84,6 +87,7 @@ def handle_data():
                 "Company": fpj_result['company'],
                 "Location": fpj_result['location'],
                 "Link": fpj_result["link"],
+                "Salary": "",
                 "Source": 'Fake Python Jobs'
             })
     results = rank_by_title_and_location_similarity(jobTitle, jobLocation, results)
