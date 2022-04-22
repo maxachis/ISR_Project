@@ -29,6 +29,24 @@ def about():
 def search():
     return render_template('search.html')
 
+def check_duplicate(result, results):
+  #Assumption: Job is duplicate if title, company and location is same for any two jobs
+  for job in results:
+      title_exist = 0
+      company_exist = 0
+      location_exist = 0
+      if result['title'] == job.get('Job Title'):
+          title_exist = 1
+      if result['company'] == job.get('Company'):
+          company_exist = 1
+      if result['location']== job.get('Location'):
+          location_exist = 1
+      #Duplicate entry found
+      if title_exist*company_exist*location_exist == 1:
+          return(True)
+  #No duplicates found
+  else:
+      return(False)
 
 @app.route('/handle_data', methods=['POST'])
 def handle_data():
@@ -41,6 +59,8 @@ def handle_data():
     if "indeed" in websites:
         indeed_results = indeed.get_indeed_results(jobTitle, jobLocation)
         for result in indeed_results:
+          is_duplicate = check_duplicate(result, results)
+          if is_duplicate == False:
             results.append({
                 "Job Title": result['title'],
                 "Company": result['company'],
@@ -55,41 +75,47 @@ def handle_data():
         li_results = linkedIn.get_linkedin_results(jobTitle, jobLocation)
         for i in range(0, min(len(li_results), 10)):
             li_result = li_results[i]
-            results.append({
-                "Job Title": li_result['title'],
-                "Company": li_result['company'],
-                "Location": li_result['location'],
-                "Link": li_result["link"],
-                "Salary": result['salary'],
-                "Source": 'LinkedIn'
-            })
+            is_duplicate = check_duplicate(li_result, results)
+            if is_duplicate == False:
+              results.append({
+                  "Job Title": li_result['title'],
+                  "Company": li_result['company'],
+                  "Location": li_result['location'],
+                  "Link": li_result["link"],
+                  "Salary": result['salary'],
+                  "Source": 'LinkedIn'
+              })
     # If Simply Hired, run Simply Hired backend
     if "simplyHired" in websites:
         sh_results = simplyHired.get_simply_hired_results(jobTitle, jobLocation)
         for i in range(0, min(len(sh_results), 10)):
             sh_result = sh_results[i]
-            results.append({
-                "Job Title": sh_result['title'],
-                "Company": sh_result['company'],
-                "Location": sh_result['location'],
-                "Link": sh_result["link"],
-                "Salary": "",
-                "Source": 'Simply Hired'
-            })
+            is_duplicate = check_duplicate(sh_result, results)
+            if is_duplicate == False:
+              results.append({
+                  "Job Title": sh_result['title'],
+                  "Company": sh_result['company'],
+                  "Location": sh_result['location'],
+                  "Link": sh_result["link"],
+                  "Salary": "",
+                  "Source": 'Simply Hired'
+              })
 
     # If Fake Python Jobs, run Fake Python Jobs Backend
     if "fakePythonJobs" in websites:
         fpj_results = fakePythonJobs.get_fake_python_jobs_results(jobTitle, jobLocation)
         for i in range(0, 10):
             fpj_result = fpj_results[i]
-            results.append({
-                "Job Title": fpj_result['title'],
-                "Company": fpj_result['company'],
-                "Location": fpj_result['location'],
-                "Link": fpj_result["link"],
-                "Salary": "",
-                "Source": 'Fake Python Jobs'
-            })
+            is_duplicate = check_duplicate(fpj_result, results)
+            if is_duplicate == False:
+              results.append({
+                  "Job Title": fpj_result['title'],
+                  "Company": fpj_result['company'],
+                  "Location": fpj_result['location'],
+                  "Link": fpj_result["link"],
+                  "Salary": "",
+                  "Source": 'Fake Python Jobs'
+              })
     results = rank_by_title_and_location_similarity(jobTitle, jobLocation, results)
     return render_template('results.html', results=results)
 
