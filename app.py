@@ -82,7 +82,7 @@ def handle_data():
                   "Company": li_result['company'],
                   "Location": li_result['location'],
                   "Link": li_result["link"],
-                  "Salary": result['salary'],
+                  "Salary": li_result['salary'],
                   "Source": 'LinkedIn'
               })
     # If Simply Hired, run Simply Hired backend
@@ -134,17 +134,21 @@ def get_location_distances(location1, results):
     locator = geopy.Photon(user_agent="measurements")
     loc1 = locator.geocode(location1)
     for i in range(len(results)):
-        loc_orig = results[i]['Location']
-        #Some Indeed sources use the phrase "remote in" in their location descriptions. Remove this.
-        loc_orig = re.sub(".*[R|r]emote\sin\s", "", loc_orig)
-        try:
-            loc_clean = re.search('.*\,\s*\w{2}', loc_orig).group(0)
-        except AttributeError:
-            #Assume not in "City, ST" format. Keep going
-            loc_clean = loc_orig
-        loc2 = locator.geocode(loc_clean)
-        results[i]['Location'] = loc_clean
-        results[i]["Distance"] = math.dist([loc1.latitude, loc2.longitude], [loc2.latitude, loc2.longitude])
+        # Because FakePythonJobs does not use actual locations, give all Fake Python Jobs results an arbitrarily long distance
+        if results[i]['Source'] == 'Fake Python Jobs':
+            results[i]['Distance'] = 200
+        else:
+            loc_orig = results[i]['Location']
+            #Some Indeed sources use the phrase "remote in" in their location descriptions. Remove this.
+            loc_orig = re.sub(".*[R|r]emote\sin\s", "", loc_orig)
+            try:
+                loc_clean = re.search('.*\,\s*\w{2}', loc_orig).group(0)
+            except AttributeError:
+                #Assume not in "City, ST" format. Keep going
+                loc_clean = loc_orig
+            loc2 = locator.geocode(loc_clean)
+            results[i]['Location'] = loc_clean
+            results[i]["Distance"] = math.dist([loc1.latitude, loc2.longitude], [loc2.latitude, loc2.longitude])
     maxDist = max(results, key=lambda x: x['Distance'])['Distance']
     for i in range(len(results)):
         results[i]["DistScore"] = 1 - results[i]['Distance'] / maxDist
