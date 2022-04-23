@@ -150,15 +150,5 @@ def get_location_distances(location1, results):
         results[i]["DistScore"] = 1 - results[i]['Distance'] / maxDist
     return results
 
-
-def rank_by_sentence_similarity(query, results):
-    nlp = spacy.load("en_core_web_md")
-    qdoc = nlp(u'' + query)
-    for i in range(len(results)):
-        results[i]["Score"] = qdoc.similarity(nlp(u'' + results[i]['Job Title']))
-    sorted_results = sorted(results, key=lambda d: d['Score'], reverse=True)
-    return sorted_results
-
-
 if __name__ == '__main__':
     app.run()
