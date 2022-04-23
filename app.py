@@ -116,6 +116,8 @@ def handle_data():
                   "Salary": "",
                   "Source": 'Fake Python Jobs'
               })
+    if (len(results) == 0):
+        return render_template('no_results.html')
     results = rank_by_title_and_location_similarity(jobTitle, jobLocation, results)
     return render_template('results.html', results=results)
 

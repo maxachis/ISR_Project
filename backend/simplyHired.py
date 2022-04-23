@@ -34,6 +34,7 @@ def transform(soup):
 
 sh_joblist = []
 def get_simply_hired_results(jobTitle, jobLocation):
+    sh_joblist = []
     position = jobTitle
     location = jobLocation
     # Extracting jobs from first 3 pages
