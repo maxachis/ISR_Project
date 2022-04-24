@@ -74,7 +74,7 @@ def transform(soup):
 
 joblist = []
 def get_linkedin_results(jobTitle, jobLocation):
-    jobList = []
+    joblist.clear()
     position = jobTitle
     location = jobLocation
     # Extracting jobs from first 3 pages
